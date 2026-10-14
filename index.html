@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Open Claude session</title>
+<style>
+  :root { color-scheme: light dark; --bg: #faf9f5; --fg: #1f1e1d; --muted: #6b6a66; --accent: #c96442; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1f1e1d; --fg: #f5f4ef; --muted: #a3a29c; --accent: #d97757; } }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--fg);
+         font: 16px/1.5 system-ui, -apple-system, sans-serif; padding: 0 16px; box-sizing: border-box; }
+  main { max-width: 32rem; text-align: center; }
+  a.button { display: inline-block; margin-top: 1rem; padding: .6rem 1.2rem; border-radius: .5rem;
+             background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; }
+  p.note { color: var(--muted); font-size: .9rem; }
+  code { word-break: break-all; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="heading">Opening Claude session…</h1>
+  <p id="message">Hand-off to the Claude desktop app.</p>
+  <a id="open" class="button" hidden>Open in Claude</a>
+  <p class="note" id="note" hidden>This link only works in the Claude app of the person who ran the session.
+    It doesn't give anyone else access.</p>
+</main>
+<script>
+  // Only ever forwards to claude://claude.ai/epitaxy/<session id>; anything else is refused,
+  // so this page can't be used as an open redirect.
+  (function () {
+    var id = decodeURIComponent(location.hash.slice(1));
+    var heading = document.getElementById("heading");
+    var message = document.getElementById("message");
+    if (!/^[A-Za-z0-9_-]{1,128}$/.test(id)) {
+      heading.textContent = "No session link";
+      message.textContent = "This page needs a Claude session ID after the #, e.g. …/claude-session/#local_<id>.";
+      return;
+    }
+    var target = "claude://claude.ai/epitaxy/" + id;
+    var open = document.getElementById("open");
+    open.href = target;
+    open.hidden = false;
+    document.getElementById("note").hidden = false;
+    message.innerHTML = "";
+    message.append("Session ", Object.assign(document.createElement("code"), { textContent: id }));
+    location.href = target;
+  })();
+</script>
+</body>
+</html>
